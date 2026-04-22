@@ -1,0 +1,88 @@
+<div class="flex flex-col h-full space-y-8 items-stretch">
+  <div class="border-b pb-4 flex justify-between items-end">
+    <div>
+      <h2 class="text-3xl font-bold tracking-tighter text-gray-800">Check Visitors</h2>
+      <p class="text-base font-bold uppercase tracking-widest text-gray-400">People waiting at the gate</p>
+    </div>
+    <div class="flex items-center">
+      <input type="text" [(ngModel)]="searchTerm" placeholder="Search by name..." 
+             class="border border-gray-300 p-2 text-sm font-bold uppercase tracking-widest focus:outline-none focus:border-black transition-colors" style="width: 250px;">
+    </div>
+  </div>
+
+  <div class="scrollable-table-container">
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="bg-gray-50 text-gray-500 uppercase text-xs font-bold tracking-widest border-b">
+          <th class="p-4">Visitor</th>
+          <th class="p-4">Resident Info</th>
+          <th class="p-4">Timeline</th>
+          <th class="p-4 text-center">Action</th>
+        </tr>
+      </thead>
+      <!-- Increased font size for better readability -->
+      <tbody class="text-sm text-gray-800 font-medium">
+        <tr *ngFor="let visitor of filteredVisitors" class="border-b hover:bg-gray-50 transition-colors">
+          <td class="p-4">
+            <div class="font-bold text-gray-800 uppercase text-base tracking-tighter">{{ visitor.fullName }}</div>
+            <div class="text-[11px] text-gray-400 font-mono italic">Phone: {{ visitor.phoneNumber }}</div>
+          </td>
+          <td class="p-4">
+            <div class="text-xs font-bold text-gray-600 uppercase">{{ visitor.residentName }}</div>
+            <div class="text-[11px] font-bold text-gray-400 italic font-medium">Flat {{ visitor.flatNumber }}</div>
+          </td>
+          <td class="p-4">
+            <div class="flex flex-col text-xs font-bold uppercase tracking-tighter">
+              <span *ngIf="visitor.entryTime" class="text-blue-500 italic">In: {{ visitor.entryTime | date:'HH:mm' }}</span>
+              <span *ngIf="visitor.exitTime" class="text-gray-400">Out: {{ visitor.exitTime | date:'HH:mm' }}</span>
+              <span *ngIf="!visitor.entryTime" class="text-gray-300 italic">Pending Entry</span>
+            </div>
+          </td>
+          <td class="p-4 text-center">
+             <!-- Step 1: Pending -> Approve -->
+             <div *ngIf="isStatus(visitor.status, 0)">
+              <button (click)="updateStatus(visitor.id, 'Approved')" [disabled]="isProcessing[visitor.id]" 
+                      class="bg-gray-800 text-white px-6 py-2 text-xs font-bold uppercase tracking-widest border-b-4 border-black shadow-md hover:bg-black transition-all">
+                Approve Entry
+              </button>
+            </div>
+
+            <!-- Step 2: Approved -> OTP PIN -->
+            <div *ngIf="isStatus(visitor.status, 1)" class="flex items-center justify-center space-x-2">
+              <input type="text" [(ngModel)]="otpInputs[visitor.id]" placeholder="PIN" 
+                     class="w-20 border p-2 text-center text-xs font-bold focus:outline-none focus:bg-gray-50 rounded-0" maxlength="6">
+              <button (click)="verifyOtp(visitor.id)" [disabled]="!otpInputs[visitor.id] || isProcessing[visitor.id]" 
+                      class="bg-gray-800 text-white px-4 py-2 text-xs font-bold uppercase border-b-4 border-black shadow-md">
+                Verify
+              </button>
+            </div>
+
+            <!-- Step 3: Entered -> Exit -->
+            <div *ngIf="isStatus(visitor.status, 3)">
+              <button (click)="updateStatus(visitor.id, 'Exited')" [disabled]="isProcessing[visitor.id]" 
+                      class="border-2 border-gray-800 text-gray-800 px-6 py-2 text-xs font-bold uppercase tracking-widest hover:bg-gray-800 hover:text-white transition-all shadow-md">
+                LEFT GATE
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="!isLoading && filteredVisitors.length === 0">
+          <td colspan="4" class="p-40 text-center text-gray-200 font-bold uppercase tracking-[0.5em] italic">
+            <span *ngIf="searchTerm">No matches for "{{ searchTerm }}"</span>
+            <span *ngIf="!searchTerm">No Pending Visitors</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Simple Notification Overlay -->
+<div class="fixed top-8 right-8 z-[100] space-y-4 max-w-xs pointer-events-none">
+  <div *ngIf="successMessage" class="bg-gray-800 text-white p-4 font-bold text-xs uppercase border shadow-2xl animate-pulse">
+    {{ successMessage }}
+  </div>
+  <div *ngIf="errorMessage" class="bg-white text-red-600 p-4 font-bold text-xs uppercase border-l-4 border-red-600 shadow-2xl">
+    {{ errorMessage }}
+  </div>
+</div>

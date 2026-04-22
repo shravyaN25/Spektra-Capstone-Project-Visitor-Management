@@ -1,0 +1,29 @@
+<div class="dashboard-wrapper">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h5 class="m-0 font-bold uppercase text-xs tracking-widest" style="color: var(--primary-blue);">Admin Portal</h5>
+    </div>
+    <nav class="mt-4">
+      <a class="nav-link" routerLink="./overview" routerLinkActive="active">
+        Dashboard
+      </a>
+      <a class="nav-link" routerLink="./residents" routerLinkActive="active">
+        Residents
+      </a>
+      <a class="nav-link" routerLink="./visitors" routerLinkActive="active">
+        All Visitors
+      </a>
+      <div class="mt-8 pt-4 border-t">
+        <button class="nav-link w-full text-left" style="background: transparent; border: none; cursor: pointer; color: #ef4444;" (click)="logout()">
+          Logout
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Content -->
+  <div class="content-area pt-12">
+    <router-outlet></router-outlet>
+  </div>
+</div>

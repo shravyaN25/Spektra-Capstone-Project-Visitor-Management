@@ -1,0 +1,5 @@
+/* Admin Overview Styles */
+:host {
+  display: block;
+  height: 100%;
+}

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>VisitorManagement</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+  <app-root></app-root>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*Browser opens index.html
+   ↓
+<app-root> exists
+   ↓
+main.ts runs
+   ↓
+bootstrapApplication()
+   ↓
+Angular engine starts
+   ↓
+AppComponent created
+   ↓
+Inserted into <app-root>
+   ↓
+Router checks URL
+   ↓
+LandingComponent rendered */
+
+
+
+/*1. Browser loads index.html
+2. <app-root> is just an empty placeholder
+3. Angular JS loads → main.ts runs
+4. bootstrapApplication() starts Angular
+5. Angular creates AppComponent
+6. AppComponent is inserted into <app-root>
+7. Router checks URL
+8. LandingComponent is rendered inside AppComponent*/
+
+
+
+/*index.html loads
+↓
+<app-root> is EMPTY
+↓
+Angular JS loads (main.ts)
+↓
+bootstrapApplication runs
+↓
+Angular starts
+↓
+AppComponent created
+↓
+Inserted into <app-root>
+↓
+AppComponent has <router-outlet>
+↓
+Router checks URL "/"
+↓
+LandingComponent loaded inside router-outlet*/

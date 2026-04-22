@@ -1,0 +1,89 @@
+<div class="flex flex-col h-full space-y-8 items-stretch">
+  <div class="border-b pb-4 flex justify-between items-end">
+    <div>
+      <h2 class="text-3xl font-bold tracking-tighter">Residents</h2>
+      <p class="text-base font-bold uppercase tracking-widest text-gray-400">Manage all people living here</p>
+    </div>
+    <div class="flex items-center space-x-4">
+      <input type="text" [(ngModel)]="searchTerm" placeholder="Search by name..." 
+             class="border border-gray-300 p-2 text-sm font-bold uppercase tracking-widest focus:outline-none focus:border-black transition-colors" style="width: 250px;">
+      <button (click)="openCreateModal()" class="bg-gray-800 text-white px-8 py-2 text-xs font-bold uppercase tracking-widest shadow-sm">
+        Add Resident
+      </button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-10 items-start">
+    <!-- List Table -->
+    <div class="xl:col-span-2 scrollable-table-container">
+      <table class="w-full text-left border-collapse">
+        <thead class="bg-gray-50 text-gray-500 uppercase text-xs font-bold tracking-widest border-b">
+          <tr>
+            <th class="p-4">Name / email</th>
+            <th class="p-4 text-center">Flat</th>
+            <th class="p-4">Phone</th>
+            <th class="p-4 text-center">Delete</th>
+          </tr>
+        </thead>
+        <!-- Increased font size for better readability -->
+        <tbody class="text-sm text-gray-800">
+          <tr *ngFor="let r of filteredResidents" class="border-b hover:bg-gray-50 transition-colors">
+            <td class="p-4">
+              <div class="font-bold text-base text-gray-800">{{ r.name }}</div>
+              <div class="text-xs text-gray-400 italic font-medium">{{ r.email }}</div>
+            </td>
+            <td class="p-4 text-center font-bold text-gray-800 text-base">{{ r.flatNumber }}</td>
+            <td class="p-4 text-gray-500 text-sm font-medium">{{ r.phoneNumber }}</td>
+            <td class="p-4 text-center space-x-2">
+              <button (click)="openEditModal(r)" class="border-2 border-blue-500 text-blue-500 hover:bg-gray-800 hover:text-white hover:border-gray-800 px-3 py-1 font-bold uppercase text-xs transition-all">Edit</button>
+              <button (click)="onDelete(r.id)" class="border-2 border-red-300 text-red-300 hover:border-red-600 hover:text-red-600 px-3 py-1 font-bold uppercase text-xs transition-all">Remove</button>
+            </td>
+          </tr>
+          <tr *ngIf="filteredResidents.length === 0">
+            <td colspan="4" class="p-10 text-center text-gray-400 font-bold uppercase tracking-[0.2em] italic">
+              <span *ngIf="searchTerm">No matches for "{{ searchTerm }}"</span>
+              <span *ngIf="!searchTerm">No residents found</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Simple Form -->
+    <div class="border p-6 bg-white shadow-sm" *ngIf="selectedResident || !isEditMode">
+      <h3 class="text-xs font-bold uppercase border-b mb-8 pb-1 text-gray-400 italic">{{ isEditMode ? 'Edit Resident' : 'New Resident' }}</h3>
+      <form (ngSubmit)="onSubmit()" #userForm="ngForm" class="space-y-6">
+        <div>
+          <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Full Name</label>
+          <input type="text" name="name" [(ngModel)]="formData.name" class="w-full border p-2 text-sm font-bold focus:bg-gray-50 focus:outline-none" required>
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Email Address</label>
+          <input type="email" name="email" [(ngModel)]="formData.email" class="w-full border p-2 text-sm font-bold focus:bg-gray-50 focus:outline-none" required>
+        </div>
+        <div *ngIf="!isEditMode">
+          <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Password</label>
+          <input type="password" name="password" [(ngModel)]="formData.password" class="w-full border p-2 text-sm font-bold focus:bg-gray-50 focus:outline-none" required>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Flat</label>
+            <input type="text" name="flatNumber" [(ngModel)]="formData.flatNumber" class="w-full border p-2 text-sm font-bold focus:bg-gray-50 focus:outline-none" required>
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Phone</label>
+            <input type="text" name="phoneNumber" [(ngModel)]="formData.phoneNumber" class="w-full border p-2 text-sm font-bold focus:bg-gray-50 focus:outline-none" required>
+          </div>
+        </div>
+
+        <div *ngIf="error" class="text-xs text-red-600 font-bold mb-4 bg-red-50 p-2 border border-red-200">{{ error }}</div>
+        <div *ngIf="success" class="text-xs text-green-600 font-bold mb-4 bg-green-50 p-2 border border-green-200">{{ success }}</div>
+        
+        <button type="submit" [disabled]="userForm.invalid || loading" 
+                class="w-full bg-gray-800 text-white py-4 font-bold uppercase text-xs tracking-widest mt-4 hover:bg-black transition-colors">
+          {{ isEditMode ? 'Update Profile' : 'Add Resident' }}
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,66 @@
+<div class="mb-8">
+  <h2 class="text-2xl font-bold tracking-tight">New Visitor Form</h2>
+  <p class="text-sm text-gray-500">Invite guest to the premises</p>
+</div>
+
+<div class="card p-8" style="max-width: 800px;">
+  <form (ngSubmit)="onSubmit()" #visitorForm="ngForm">
+    <div class="grid grid-2">
+      <!-- Full Name -->
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input type="text" name="fullName" [(ngModel)]="visitorData.fullName" required 
+               class="form-input" placeholder="Visitor Name">
+      </div>
+
+      <!-- Phone Number -->
+      <div class="form-group">
+        <label class="form-label">Phone Number</label>
+        <input type="text" name="phone" [(ngModel)]="visitorData.phoneNumber" required 
+               class="form-input" placeholder="e.g. 9876543210">
+      </div>
+    </div>
+
+    <div class="grid grid-2">
+      <!-- Purpose -->
+      <div class="form-group">
+        <label class="form-label">Visit Reason</label>
+        <select name="purpose" [(ngModel)]="visitorData.purpose" required class="form-select">
+          <option value="" disabled selected>Select Purpose</option>
+          <option value="Social">Social / Personal</option>
+          <option value="Delivery">Delivery / Courier</option>
+          <option value="Maintenance">Maintenance / Repair</option>
+          <option value="Business">Business Visit</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <!-- Arrival Time -->
+      <div class="form-group">
+        <label class="form-label">Expected Arrival</label>
+        <input type="datetime-local" name="arrival" [(ngModel)]="visitorData.expectedArrival" required 
+               [min]="minDateTime" class="form-input">
+      </div>
+    </div>
+
+    <!-- Feedback messages -->
+    <div *ngIf="error" class="mb-8 p-4 bg-gray-50 text-red-600 text-xs font-bold border-t border-b">
+      {{ error }}
+    </div>
+    <div *ngIf="success" class="mb-8 p-4 bg-gray-50 text-green-600 text-xs font-bold border-t border-b">
+      Request Sent Successfully!
+    </div>
+
+    <!-- Actions -->
+    <div class="mt-8 pt-8 border-t">
+      <div class="flex space-x-4" style="max-width: 400px;">
+        <button type="submit" [disabled]="visitorForm.invalid || loading" class="btn-primary">
+          {{ loading ? 'Syncing...' : 'Invite Visitor' }}
+        </button>
+        <button type="button" routerLink="../" class="btn-outline">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

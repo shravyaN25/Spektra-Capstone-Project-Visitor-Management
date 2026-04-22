@@ -1,0 +1,47 @@
+<div class="flex flex-col h-full space-y-8 items-stretch">
+  <div class="border-b pb-4">
+    <h2 class="text-3xl font-bold tracking-tighter text-gray-800">Visitor List</h2>
+    <p class="text-base font-bold uppercase tracking-widest text-gray-400">History of your guest registrations.</p>
+  </div>
+
+  <div class="scrollable-table-container">
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="bg-gray-50 text-gray-500 uppercase text-xs font-bold tracking-widest border-b">
+          <th class="p-4">Visitor Name</th>
+          <th class="p-4">Reason</th>
+          <th class="p-4">Timeline</th>
+          <th class="p-4 text-center">Status</th>
+        </tr>
+      </thead>
+      <tbody class="text-sm text-gray-800 font-medium">
+        <tr *ngFor="let visitor of visitors" class="border-b hover:bg-gray-50 transition-colors">
+          <td class="p-4">
+            <div class="font-bold uppercase text-base tracking-tighter">{{ visitor.fullName }}</div>
+            <div class="text-xs text-gray-400">Ph: {{ visitor.phoneNumber }}</div>
+          </td>
+          <td class="p-4 text-gray-500">{{ visitor.purpose }}</td>
+          <td class="p-4">
+            <div class="flex flex-col text-xs font-bold uppercase tracking-tighter">
+              <span *ngIf="visitor.entryTime" class="text-blue-500">In: {{ visitor.entryTime | date:'dd/MM HH:mm' }}</span>
+              <span *ngIf="visitor.exitTime" class="text-gray-400">Out: {{ visitor.exitTime | date:'dd/MM HH:mm' }}</span>
+              <span *ngIf="!visitor.entryTime" class="text-gray-300 italic">Expected: {{ visitor.expectedArrival | date:'HH:mm' }}</span>
+            </div>
+          </td>
+          <td class="p-4 text-center">
+            <span class="inline-block border px-3 py-1 text-xs uppercase tracking-tight"
+                  [ngClass]="{
+                    'bg-white text-gray-400': visitor.status === 'Pending',
+                    'bg-gray-800 text-white': visitor.status !== 'Pending'
+                  }">
+              {{ visitor.status }}
+            </span>
+          </td>
+        </tr>
+        <tr *ngIf="visitors.length === 0">
+          <td colspan="4" class="p-32 text-center text-gray-200 font-bold uppercase tracking-[0.3em] italic">No Visitors Found</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

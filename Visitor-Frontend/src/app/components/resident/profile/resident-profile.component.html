@@ -1,0 +1,61 @@
+<div class="mb-8">
+  <h2 class="text-2xl font-bold">My Profile</h2>
+  <p class="text-gray-500">Manage your credentials and information.</p>
+  <div class="mt-4 border-t"></div>
+</div>
+
+<div class="grid grid-2">
+  <div class="card p-8">
+    <div class="card-header">Your Information</div>
+    <form (ngSubmit)="onUpdate()" class="space-y-6">
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input type="text" [(ngModel)]="formData.name" name="name" required class="form-input font-bold uppercase tracking-tight">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" [(ngModel)]="formData.email" name="email" required class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label text-gray-400">Flat Number (Read Only)</label>
+        <input type="text" [(ngModel)]="formData.flatNumber" name="flatNumber" required class="form-input" readonly>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone Number</label>
+        <input type="text" [(ngModel)]="formData.phoneNumber" name="phoneNumber" required class="form-input">
+      </div>
+      
+      <div *ngIf="success" class="text-xs text-green-600 font-bold mb-1">Updated Successfully</div>
+      <div *ngIf="error" class="text-xs text-red-600 font-bold mb-1">{{ error }}</div>
+
+      <button type="submit" [disabled]="loading" class="btn-primary">
+        Update Profile
+      </button>
+    </form>
+  </div>
+
+  <div class="card p-8">
+    <div class="card-header">Account Security</div>
+    <form (ngSubmit)="onChangePassword()" class="space-y-6">
+      <div class="form-group">
+        <label class="form-label">Old Password</label>
+        <input type="password" [(ngModel)]="pwdData.oldPassword" name="oldPassword" required class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">New Passcode</label>
+        <input type="password" [(ngModel)]="pwdData.newPassword" name="newPassword" required class="form-input" placeholder="Min 6 digits">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirm New Passcode</label>
+        <input type="password" [(ngModel)]="pwdData.confirmPassword" name="confirmPassword" required class="form-input" placeholder="Repeat passcode">
+      </div>
+
+      <div *ngIf="pwdSuccess" class="text-xs text-green-600 font-bold mb-1">Password Updated</div>
+      <div *ngIf="pwdError" class="text-xs text-red-600 font-bold mb-1">{{ pwdError }}</div>
+
+      <button type="submit" [disabled]="pwdLoading" class="btn-outline">
+        Change Passcode
+      </button>
+    </form>
+  </div>
+</div>
