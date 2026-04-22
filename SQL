@@ -1,0 +1,158 @@
+-- =============================================
+-- VISITOR MANAGEMENT SYSTEM - DATABASE SCRIPTS
+-- =============================================
+-- Contains:
+-- 1. Stored Procedures
+-- 2. View
+-- 3. Trigger
+-- =============================================
+
+-- ============================================================
+-- 1. STORED PROCEDURES
+-- ============================================================
+
+---
+
+-- 1.1 sp_GetResidentVisitors
+-- Description:
+-- Fetches all visitors for a given resident using the summary view
+
+---
+
+CREATE PROCEDURE sp_GetResidentVisitors
+@ResidentId INT
+AS
+BEGIN
+SELECT *
+FROM vw_VisitorSummary
+WHERE ResidentId = @ResidentId
+ORDER BY ExpectedArrival DESC
+END;
+GO
+
+---
+
+-- 1.2 sp_UpdateVisitorStatus
+-- Description:
+-- Updates visitor status and sets EntryTime / ExitTime accordingly
+-- Status Meaning:
+-- 1 = Pending
+-- 2 = Approved
+-- 3 = Checked-In
+-- 4 = Checked-Out
+
+---
+
+CREATE PROCEDURE sp_UpdateVisitorStatus
+@VisitorId INT,
+@NewStatus INT
+AS
+BEGIN
+UPDATE Visitors
+SET Status = @NewStatus,
+
+```
+    -- Set EntryTime when visitor checks in
+    EntryTime = CASE 
+                    WHEN @NewStatus = 3 THEN GETUTCDATE() 
+                    ELSE EntryTime 
+                END,
+
+    -- Set ExitTime when visitor checks out
+    ExitTime = CASE 
+                    WHEN @NewStatus = 4 THEN GETUTCDATE() 
+                    ELSE ExitTime 
+               END
+
+WHERE Id = @VisitorId
+```
+
+END;
+GO
+
+-- ============================================================
+-- 2. VIEW
+-- ============================================================
+
+---
+
+-- 2.1 vw_VisitorSummary
+-- Description:
+-- Combines visitor and resident details for easy querying
+
+---
+
+CREATE VIEW vw_VisitorSummary AS
+SELECT
+v.Id,
+v.FullName,
+v.PhoneNumber,
+v.Purpose,
+v.Status,
+v.ExpectedArrival,
+v.EntryTime,
+v.ExitTime,
+v.ResidentId,
+
+```
+-- Resident Details
+u.Name AS ResidentName,
+u.FlatNumber
+```
+
+FROM Visitors v
+LEFT JOIN Users u
+ON v.ResidentId = u.Id;
+GO
+
+-- ============================================================
+-- 3. TRIGGER
+-- ============================================================
+
+---
+
+-- 3.1 trg_VisitorStatusLogs
+-- Description:
+-- Automatically logs Check-In and Check-Out times
+-- whenever visitor status changes
+
+---
+
+CREATE TRIGGER trg_VisitorStatusLogs
+ON Visitors
+AFTER UPDATE
+AS
+BEGIN
+SET NOCOUNT ON;
+
+```
+-- --------------------------------------------
+-- Insert Check-In Log (Status = 3)
+-- --------------------------------------------
+INSERT INTO VisitorLogs (VisitorId, CheckInTime)
+SELECT i.Id, GETUTCDATE()
+FROM inserted i
+JOIN deleted d ON i.Id = d.Id
+WHERE i.Status = 3 
+  AND d.Status <> 3;
+
+
+-- --------------------------------------------
+-- Update Check-Out Log (Status = 4)
+-- --------------------------------------------
+UPDATE vl 
+SET CheckOutTime = GETUTCDATE()
+FROM VisitorLogs vl
+INNER JOIN inserted i ON vl.VisitorId = i.Id
+INNER JOIN deleted d ON i.Id = d.Id
+WHERE i.Status = 4 
+  AND d.Status <> 4 
+  AND vl.CheckOutTime IS NULL;
+```
+
+END;
+GO
+
+-- ============================================================
+-- END OF SCRIPT
+-- ============================================================
