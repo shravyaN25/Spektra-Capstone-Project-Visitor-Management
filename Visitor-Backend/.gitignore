@@ -2,3 +2,6 @@ obj
 bin
 .vs
 .sixth
+
+appsettings.json
+appsettings.Development.json
